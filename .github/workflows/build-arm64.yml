@@ -7,26 +7,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
-      - name: Set up QEMU for ARM64
-        uses: docker/setup-qemu-action@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64
       
-      - name: Build in ARM64 container
+      - name: Build ARM64 package
         run: |
           docker run --rm -v $(pwd):/build -w /build \
             --platform linux/arm64 \
             debian:bookworm bash -c '
             apt-get update
-            apt-get install -y nodejs npm yarn git jq moreutils gettext build-essential
+            apt-get install -y nodejs npm yarn git jq moreutils gettext build-essential python3
             make install
-            tar czf cockpit-file-sharing-arm64.tar.gz /usr/local/share/cockpit/file-sharing
-          '
+            '
       
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: cockpit-file-sharing-arm64
-          path: cockpit-file-sharing-arm64.tar.gz
+          name: file-sharing-arm64
+          path: /usr/share/cockpit/file-sharing/
+          retention-days: 30
